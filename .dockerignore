@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+*.log
+.mail-outbox
+.mongodb-binaries
+test-results
+playwright-report
+docs
+tests
+vitest.*.config.ts
