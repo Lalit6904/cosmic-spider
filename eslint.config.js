@@ -1,8 +1,9 @@
 import js from '@eslint/js';
+import react from 'eslint-plugin-react';
 import security from 'eslint-plugin-security';
-import tseslint from 'typescript-eslint';
+import globals from 'globals';
 
-export default tseslint.config(
+export default [
   {
     ignores: [
       'dist/**',
@@ -14,18 +15,28 @@ export default tseslint.config(
     ],
   },
   js.configs.recommended,
-  ...tseslint.configs.recommended,
   {
-    files: ['**/*.{ts,tsx}'],
-    plugins: { security },
+    files: ['**/*.{js,jsx,mjs}'],
+    plugins: { react, security },
+    languageOptions: {
+      ecmaVersion: 2023,
+      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
     rules: {
       ...security.configs.recommended.rules,
       // Browser password-confirmation and role checks are not secret-dependent
       // comparisons. Cryptographic comparisons use bcrypt and timingSafeEqual.
       'security/detect-possible-timing-attacks': 'off',
-      'no-undef': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': [
+      // Core no-unused-vars does not see JSX element references.
+      'react/jsx-uses-vars': 'error',
+      'no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],
@@ -38,24 +49,9 @@ export default tseslint.config(
     },
   },
   {
-    files: ['tests/**/*.{ts,tsx}', 'scripts/**/*.mjs'],
+    files: ['tests/**/*.{js,jsx}'],
     rules: {
       'security/detect-object-injection': 'off',
     },
   },
-  {
-    files: ['scripts/**/*.mjs'],
-    languageOptions: {
-      globals: {
-        Buffer: 'readonly',
-        URL: 'readonly',
-        clearTimeout: 'readonly',
-        console: 'readonly',
-        fetch: 'readonly',
-        performance: 'readonly',
-        process: 'readonly',
-        setTimeout: 'readonly',
-      },
-    },
-  },
-);
+];

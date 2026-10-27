@@ -146,7 +146,7 @@ Critical details:
 - `TRUST_PROXY=true` is required for correct client IPs and secure-cookie behaviour behind the proxy.
 - The proxy must not allow clients to spoof `X-Forwarded-For`; overwrite it.
 - `ALLOWED_ORIGINS` must match the browser-visible HTTPS origin, not the upstream address.
-- If you put a CDN in front, ensure WebSocket upgrades and cookies work, and update the CSP in `server/app.ts` if asset origins change.
+- If you put a CDN in front, ensure WebSocket upgrades and cookies work, and update the CSP in `server/app.js` if asset origins change.
 - Keep the SPA, API, and Socket.IO on the same site. Splitting them across origins requires CORS, cookie, CSP, and Socket.IO changes.
 
 ### Caddy alternative

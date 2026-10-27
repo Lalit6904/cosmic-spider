@@ -2,7 +2,7 @@
 
 Namespace: default. Path: `/socket.io`. Transport: WebSocket or HTTP long-polling, with WebSocket preferred.
 
-All event names and payloads are typed in [`shared/protocol.ts`](../shared/protocol.ts). This document describes the runtime contract.
+All event names and payloads are defined in [`shared/protocol.js`](../shared/protocol.js). This document describes the runtime contract.
 
 ## Connection
 
@@ -21,7 +21,7 @@ Rejected handshakes fail with `UNAUTHENTICATED` or an origin error.
 
 Sessions are re-checked during activity at most once every 15 seconds. If the session has been revoked or expired, the socket receives `session:expired` and is disconnected.
 
-```ts
+```js
 import { io } from 'socket.io-client';
 
 const socket = io('/', {
@@ -34,7 +34,7 @@ const socket = io('/', {
 
 Client actions accept an optional acknowledgement callback. The shape is:
 
-```ts
+```text
 type Ack<T> =
   | { ok: true; data?: T }
   | { ok: false; error: { code: string; message: string; retryAfterMs?: number } };
@@ -68,7 +68,7 @@ The server always replies to acknowledged events. Some failures also emit a sepa
 
 Creating a room does not make the creator a player by itself; the client immediately joins with the returned code:
 
-```ts
+```js
 const created = await emitAck('room:create', {
   name: 'The Drawing Nebula',
   visibility: 'public',
@@ -93,7 +93,7 @@ Room creation rules:
 
 ### Drawing
 
-```ts
+```js
 socket.emit('drawing:stroke', {
   strokeId: crypto.randomUUID(),
   color: '#7ce7ff',
@@ -122,7 +122,7 @@ Constraints:
 
 ### Guessing
 
-```ts
+```js
 socket.emit('guess:submit', { text: 'sweater' }, (ack) => {
   if (ack.ok) {
     console.log(ack.data.correct, ack.data.points);
@@ -185,10 +185,10 @@ Only the room owner can mute, unmute, or kick. Mutes last 5 minutes and are in-m
 
 ### `RoomState`
 
-`room:state` is projected per viewer. The full shape is defined in `shared/protocol.ts`:
+`room:state` is projected per viewer. A room state has this shape:
 
-```ts
-interface RoomState {
+```text
+RoomState {
   id: string;
   code: string;
   name: string;
@@ -223,8 +223,8 @@ interface RoomState {
 
 ### Masked guess shape
 
-```ts
-interface MaskedGuess {
+```text
+MaskedGuess {
   id: string;
   roundNumber: number;
   userId: string;
@@ -283,7 +283,7 @@ Common socket error codes: `VALIDATION_ERROR`, `UNAUTHENTICATED`, `FORBIDDEN`, `
 
 ## Reconnect example
 
-```ts
+```js
 socket.on('disconnect', () => {
   // Socket.IO reconnects automatically.
 });

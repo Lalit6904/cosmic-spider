@@ -21,7 +21,7 @@ Untrusted browser input
   -> session authentication and CSRF
   -> Socket.IO origin + session + event schemas
   -> GameHub authorization and game rules
-  -> Mongoose models with typed fields
+  -> Mongoose models with strict schemas
   -> MongoDB
 ```
 
@@ -90,7 +90,7 @@ CORS allows only exact origins from `ALLOWED_ORIGINS`, with credentials enabled.
 - Colours must match `#rrggbb`.
 - Chat and guesses reject disallowed control characters.
 - MongoDB operators are never built from raw user input.
-- `sanitizeFilter` is deliberately **not** enabled globally. Mongoose's global option wraps trusted operators such as `$gt` and can break session expiry and login queries. Injection defence comes from strict schemas, dangerous-key rejection, and typed model fields instead.
+- `sanitizeFilter` is deliberately **not** enabled globally. Mongoose's global option wraps trusted operators such as `$gt` and can break session expiry and login queries. Injection defence comes from strict schemas, dangerous-key rejection, and schema-validated model fields instead.
 
 ### Rate limiting and abuse resistance
 
@@ -149,7 +149,7 @@ All counters are **in memory** and reset on restart. They are not a substitute f
 | Drawing DoS | Browser/server resource exhaustion | Event/point/stroke/payload limits, per-IP limits, canvas caps | A malicious drawer can still fill the allowed canvas and disrupt a round until cleared or ended. |
 | Chat spam / abuse | Harassment | Rate limits, mute, kick, reports | Reports are not reviewed automatically; there is no profanity filter or image chat. |
 | Socket hijacking / cross-origin | Unauthorized actions | Cookie auth, exact origin allowlist, session revalidation | A compromised browser or stolen cookie is equivalent to the user. |
-| NoSQL injection | Data disclosure or corruption | Strict schemas, dangerous-key rejection, typed fields, no raw filters | New code that passes unvalidated query objects could reintroduce risk; review query construction. |
+| NoSQL injection | Data disclosure or corruption | Strict schemas, dangerous-key rejection, schema-validated model fields, no raw filters | New code that passes unvalidated query objects could reintroduce risk; review query construction. |
 | IDOR | Unauthorized data access | Profile is derived from the session; room actions require membership; moderation requires ownership | Leaderboards and public room summaries are intentionally public to signed-in users. |
 | XSS | Session theft / defacement | React escaping, CSP without inline scripts, no raw HTML rendering, control-character limits | Third-party scripts are not used, but supply-chain compromise remains possible. |
 | Clickjacking | UI redress | CSP `frame-ancestors 'none'`, `X-Frame-Options: SAMEORIGIN` | None identified. |

@@ -2,12 +2,12 @@
 
 ## 1. Shape of the system
 
-Cosmic Spider is a single-origin TypeScript application:
+Cosmic Spider is a single-origin JavaScript application using ES modules and JSX:
 
 ```text
 Browser (React 19 + Vite)
   |  HTTPS: /api/*            (JSON)
-  |  WSS:   /socket.io        (typed events)
+  |  WSS:   /socket.io        (Socket.IO events)
   v
 Node.js process (Express 5 + Socket.IO 4)
   |-- HTTP middleware: Helmet, CORS, origin guard, JSON limits, auth, CSRF, rate limits
@@ -31,11 +31,11 @@ In development, Vite serves the client on port 5173 and proxies `/api` and `/soc
 
 ## 3. Server components
 
-### `server/index.ts`
+### `server/index.js`
 
 Creates the database connection, `GameHub`, Express app, HTTP server, and `RealtimeService`; configures HTTP timeouts; and installs graceful shutdown for `SIGINT`/`SIGTERM`. Shutdown stops realtime work, closes the HTTP server, and disconnects Mongoose, with a 10-second forced-exit guard.
 
-### `server/app.ts`
+### `server/app.js`
 
 Builds the Express middleware pipeline:
 
@@ -53,7 +53,7 @@ Builds the Express middleware pipeline:
 12. Static SPA serving and history fallback when `dist/client/index.html` exists.
 13. Global 404 and structured error handler.
 
-### `server/socket/RealtimeService.ts`
+### `server/socket/RealtimeService.js`
 
 Owns the Socket.IO server and per-connection lifecycle:
 
@@ -64,10 +64,10 @@ Owns the Socket.IO server and per-connection lifecycle:
 - Enforces a single active socket per user; the newest connection wins and the old one is told why it was closed.
 - Parses every event with a strict Zod schema.
 - Applies per-user and per-IP event rate limits.
-- Sends typed acknowledgements for every client action.
+- Sends structured acknowledgements for every client action.
 - Translates unexpected errors into safe socket error payloads.
 
-### `server/game/GameHub.ts`
+### `server/game/GameHub.js`
 
 The authoritative game engine. It owns:
 
@@ -81,18 +81,18 @@ The authoritative game engine. It owns:
 - Persistence of sessions, per-guess results, user statistics, and moderation records.
 - Play-again reset.
 
-`GameHub` is deliberately independent of Express and Socket.IO types so it can be tested directly. It receives a Socket.IO `Server` via `attach()` for broadcasting.
+`GameHub` is deliberately independent of Express and Socket.IO internals so it can be tested directly. It receives a Socket.IO `Server` via `attach()` for broadcasting.
 
 ### `server/services/*`
 
-- `authService.ts`: registration, login, lockout, password change, password recovery, profile, global leaderboard.
-- `sessions.ts`: opaque session creation, cookie issuance, authentication, CSRF binding, rotation, and revocation.
-- `email.ts`: SMTP delivery, or a local `.mail-outbox/` file in development.
+- `authService.js`: registration, login, lockout, password change, password recovery, profile, global leaderboard.
+- `sessions.js`: opaque session creation, cookie issuance, authentication, CSRF binding, rotation, and revocation.
+- `email.js`: SMTP delivery, or a local `.mail-outbox/` file in development.
 
 ### `shared/*`
 
-- `protocol.ts`: typed client/server events, room state, limits, and public view models.
-- `game.ts`: pure scoring, guess normalization, word masking, hint reveal, and deterministic ranking.
+- `protocol.js`: client/server event names, room state, limits, and public view models.
+- `game.js`: pure scoring, guess normalization, word masking, hint reveal, and deterministic ranking.
 
 Nothing in `shared/` contains the secret word list or authoritative room state.
 
@@ -198,7 +198,7 @@ The client-side room page deliberately awaits the `room:leave` acknowledgement b
 
 - `AuthContext` restores `/api/auth/session`, stores the user, and exposes the CSRF token.
 - `ApiClient` sends same-origin credentials and the `X-CSRF-Token` header for state-changing calls.
-- `socket.ts` creates one authenticated Socket.IO connection per room page, with automatic reconnect.
+- `socket.js` creates one authenticated Socket.IO connection per room page, with automatic reconnect.
 - `RoomPage` owns the room socket lifecycle, event subscriptions, state, and cleanup.
 - `DrawingCanvas` renders committed strokes plus the local in-progress stroke, converts pointer coordinates to normalized values, and handles undo/redo/clear controls.
 - `useServerCountdown` aligns a local animation frame loop to the server's `endsAt`/`serverNow`, avoiding drift and tab-throttle errors.

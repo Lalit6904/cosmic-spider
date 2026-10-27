@@ -2,7 +2,7 @@
 
 A secure, real-time multiplayer drawing and guessing game. One player draws a secret word on a shared canvas; everyone else races to guess it before the round clock runs out.
 
-Cosmic Spider is a complete full-stack application, not a simulated demo. The Express/Socket.IO server owns rooms, rounds, timers, hints, word secrets, guess validation, scoring, and leaderboards. The React client is a rendering and input layer.
+Cosmic Spider is a complete full-stack application, not a simulated demo. The Express/Socket.IO server owns rooms, rounds, timers, hints, word secrets, guess validation, scoring, and leaderboards. The React client is a rendering and input layer. The codebase is plain JavaScript (ES modules and JSX) with no TypeScript toolchain.
 
 ## Highlights
 
@@ -20,8 +20,8 @@ Cosmic Spider is a complete full-stack application, not a simulated demo. The Ex
 
 | Layer | Choice |
 | --- | --- |
-| Client | React 19, React Router 7, Vite 8, TypeScript |
-| Server | Node.js 22+, Express 5, Socket.IO 4, TypeScript |
+| Client | React 19, React Router 7, Vite 8, JavaScript + JSX |
+| Server | Node.js 22+, Express 5, Socket.IO 4, JavaScript (ES modules) |
 | Database | MongoDB 8 with Mongoose 9 |
 | Auth | bcrypt, opaque cookie sessions, CSRF synchronizer token |
 | Validation | Zod 4 |
@@ -101,9 +101,8 @@ In-room standings sort by score, then correct guesses, then join time, username,
 | `npm run dev` | Run API (watch mode) and Vite together. |
 | `npm run dev:server` | Run only the API. |
 | `npm run dev:client` | Run only the Vite client. |
-| `npm run build` | Type-check, build the client, and bundle the server. |
+| `npm run build` | Build the client and bundle the server. |
 | `npm start` | Start the production build. |
-| `npm run typecheck` | TypeScript with no emit. |
 | `npm run lint` | ESLint over the repository. |
 | `npm test` | Server and client test suites. |
 | `npm run test:server` | API, Socket.IO, and shared-rule tests. |
@@ -132,7 +131,7 @@ cosmic-spider/
     routes/               HTTP API
     services/             Auth, sessions, profile, leaderboard, email
     socket/               Socket.IO authentication and event handlers
-  shared/                 Protocol types and shared game rules
+  shared/                 Protocol constants and shared game rules
   tests/                  Server, client, and shared tests
   docs/                   Architecture, API, events, schema, security, deployment
   scripts/                Load-test tooling
@@ -153,10 +152,10 @@ cosmic-spider/
 
 The following were run locally on Windows with Node 24 and MongoDB 8.2:
 
-- `npm run typecheck` - passed
 - `npm run lint` - passed with no warnings
 - `npm test` - 50/50 tests passed
 - `npm run build` - passed; route-level code splitting keeps every chunk under Vite's 500 kB warning threshold
+- Production server smoke test - `/api/health/ready` returned 200, the built SPA loaded in a browser with no console errors, and asset/CORS handling worked on the configured origin
 - `npm run loadtest` - 6-player smoke passed with a correct guess and game-over; join/ready/guess acknowledgements stayed under 50 ms at p95
 - `npm audit` - 0 vulnerabilities
 - Manual two-client round - registration, room creation/join, ready-up, start, synchronized drawing, correct guess, +30 points, round end, and game-over standings all verified

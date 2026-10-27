@@ -296,7 +296,7 @@ Any unmatched `/api/*` returns:
 
 ## Client example
 
-```ts
+```js
 const response = await fetch('/api/auth/login', {
   method: 'POST',
   credentials: 'same-origin',

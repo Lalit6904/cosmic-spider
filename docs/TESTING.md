@@ -7,7 +7,6 @@ npm test               # server + client
 npm run test:server    # Vitest server/shared suites
 npm run test:client    # Vitest React component suite
 npm run test:coverage  # server coverage (v8)
-npm run typecheck
 npm run lint
 npm run build
 npm run audit
@@ -22,7 +21,7 @@ The repository currently has **50 passing tests**.
 - Client tests run in jsdom with Testing Library.
 - `mongodb-memory-server` starts an isolated MongoDB instance for server tests.
 - Server test files are run without file-level parallelism to keep shared in-memory rate-limit state deterministic.
-- `tests/setup.server.ts` connects through the production `connectDatabase()` helper so tests exercise the same Mongoose settings as the server.
+- `tests/setup.server.js` connects through the production `connectDatabase()` helper so tests exercise the same Mongoose settings as the server.
 - After each server test, collections are cleared and HTTP rate-limit stores are reset.
 - The server test setup calls `syncIndexes()` so the unique scoring index exists before race tests.
 
@@ -38,7 +37,7 @@ Override it with `MONGOMS_SYSTEM_BINARY` if MongoDB is installed elsewhere, or l
 
 ### Shared rules - 11 tests
 
-`tests/shared/game.test.ts`
+`tests/shared/game.test.js`
 
 - Required scoring rule: remaining whole seconds multiplied by two.
 - Zero/negative/NaN remaining time awards no points.
@@ -53,7 +52,7 @@ Override it with `MONGOMS_SYSTEM_BINARY` if MongoDB is installed elsewhere, or l
 
 ### HTTP authentication and security - 16 tests
 
-`tests/server/auth.api.test.ts`
+`tests/server/auth.api.test.js`
 
 - Registration hashes the password and sets an opaque `HttpOnly`, `SameSite=Lax` session cookie.
 - Weak passwords, unknown fields, and duplicate accounts are rejected.
@@ -73,7 +72,7 @@ Override it with `MONGOMS_SYSTEM_BINARY` if MongoDB is installed elsewhere, or l
 
 ### Socket.IO and gameplay - 9 tests
 
-`tests/server/realtime.test.ts`
+`tests/server/realtime.test.js`
 
 - Unauthenticated sockets and disallowed origins are rejected.
 - Event payloads are validated and phase-invalid actions fail.
@@ -91,7 +90,7 @@ Override it with `MONGOMS_SYSTEM_BINARY` if MongoDB is installed elsewhere, or l
 
 ### Client components - 14 tests
 
-`tests/client/components.test.tsx`
+`tests/client/components.test.jsx`
 
 - `Modal` keeps focus in its autofocus field while the parent rerenders on every keystroke.
 - `WordDisplay` shows the full word only to the active drawer.
@@ -158,7 +157,6 @@ The script reports join/ready/guess acknowledgement latency percentiles and fail
 
 ```yaml
 - npm ci
-- npm run typecheck
 - npm run lint
 - npm test
 - npm run build

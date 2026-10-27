@@ -13,4 +13,4 @@ test-results
 playwright-report
 docs
 tests
-vitest.*.config.ts
+vitest.*.config.js
